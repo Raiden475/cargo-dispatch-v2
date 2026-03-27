@@ -29,9 +29,8 @@ Sliding Window (ventana deslizante) con dos punteros.
 6. El contador de viajes se resetea automáticamente al generar una nueva cinta
 
 ## Estructura del proyecto
-```
+
 cargo-dispatch-v2/
 ├── index.html    → estructura de la interfaz
 ├── styles.css    → estilos y animaciones
 └── script.js     → lógica del algoritmo y renderizado
-```
