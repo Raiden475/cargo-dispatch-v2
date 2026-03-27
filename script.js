@@ -71,6 +71,9 @@ function generateRandomBelt() {
     return;
   }
 
+    // Reset trip counter every time a new belt is generated
+  dispatchedTripCount = 0;
+
   // Generate a fresh array of random package weights
   packageWeights = Array.from(
     { length: packageCount },
