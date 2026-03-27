@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cargo Dispatch Protocol</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="p-4 md:p-8">
+
+  <!-- ── Header ─────────────────────────────────────────────────── -->
+  <header class="mb-8">
+    <div class="flex items-end gap-4 mb-1">
+      <h1 class="main-title">
+        DESPACHO <span class="title-accent">DE CARGA</span>
+      </h1>
+      <span class="version-tag">v2.0 // PROTOCOLO</span>
+    </div>
+    <p class="subtitle">
+      Secuenciador Óptimo de Carga Contigua &nbsp;|&nbsp; Motor Sliding Window O(n)
+    </p>
+  </header>
+
+  <!-- ── Main Grid ──────────────────────────────────────────────── -->
+  <div class="main-grid">
+
+    <!-- ── LEFT COLUMN ──────────────────────────────────────────── -->
+    <div class="left-col">
+
+      <!-- Control Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="dot"></span>
+          Panel de Control
+        </div>
+        <div class="panel-body">
+
+          <div>
+            <label class="field-label">Capacidad Máxima del Montacargas (kg)</label>
+            <input id="weight-limit-input" type="number" min="1" placeholder="ej: 100" class="field-input" />
+          </div>
+
+          <div>
+            <label class="field-label">Cantidad de Paquetes en Cinta</label>
+            <input id="package-count-input" type="number" min="3" max="30" value="10" class="field-input" />
+          </div>
+
+          <div class="two-col">
+            <div>
+              <label class="field-label">Peso Mín (kg)</label>
+              <input id="min-weight-input" type="number" min="1" value="5" class="field-input" />
+            </div>
+            <div>
+              <label class="field-label">Peso Máx (kg)</label>
+              <input id="max-weight-input" type="number" min="1" value="40" class="field-input" />
+            </div>
+          </div>
+
+          <button id="generate-belt-btn" class="btn-primary">
+            ⟳ Generar Cinta Aleatoria
+          </button>
+
+          <button id="dispatch-btn" class="btn-dispatch" disabled>
+            🚛 Despachar Viaje Óptimo
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Gauge Panel -->
+      <div class="panel" id="gauge-panel" style="display:none">
+        <div class="panel-header">
+          <span class="dot"></span>
+          Utilización del Montacargas
+        </div>
+        <div class="panel-body">
+          <div class="gauge-row">
+            <span class="gauge-label">Carga actual</span>
+            <span id="utilisation-label" class="gauge-pct">0%</span>
+          </div>
+          <div class="gauge-track">
+            <div id="gauge-fill" class="gauge-fill" style="width:0%"></div>
+          </div>
+          <div class="gauge-row">
+            <span class="gauge-min">0 kg</span>
+            <span id="gauge-max-label" class="gauge-min">– kg</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="dot"></span>
+          Estadísticas del Viaje
+        </div>
+        <div class="panel-body">
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-label">Paquetes en viaje</div>
+              <div id="stat-count" class="stat-value">–</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Carga (kg)</div>
+              <div id="stat-load" class="stat-value highlight">–</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Residual (kg)</div>
+              <div id="stat-residual" class="stat-value">–</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Eficiencia</div>
+              <div id="stat-efficiency" class="stat-value success">–</div>
+            </div>
+            <div class="stat-box stat-full">
+              <div class="stat-label">Viajes despachados</div>
+              <div id="stat-trips" class="stat-value">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── RIGHT COLUMN ─────────────────────────────────────────── -->
+    <div class="right-col">
+
+      <!-- Belt Panel -->
+      <div class="panel panel-grow">
+        <div class="panel-header">
+          <span class="dot"></span>
+          Cinta Transportadora — Secuencia de Paquetes
+          <span class="belt-count" id="belt-package-count">0 paquetes</span>
+        </div>
+        <div class="panel-body">
+          <div id="package-belt" class="belt-wrap">
+            <div class="empty-state" id="empty-state">
+              GENERÁ UNA CINTA PARA COMENZAR
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result Banner -->
+      <div id="result-banner"></div>
+
+      <!-- Algorithm Log -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="dot"></span>
+          Trazado del Algoritmo — Sliding Window O(n)
+        </div>
+        <div id="algorithm-log" class="log-body">
+          <span class="log-line">// Esperando datos de entrada…</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Footer ─────────────────────────────────────────────────── -->
+  <footer class="footer">
+    ALGORITMO SLIDING WINDOW &nbsp;·&nbsp; O(n) TIEMPO &nbsp;·&nbsp; O(1) ESPACIO &nbsp;·&nbsp; PROTOCOLO DE DESPACHO DE CARGA
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
